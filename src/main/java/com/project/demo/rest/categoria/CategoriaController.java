@@ -44,7 +44,7 @@ public class CategoriaController {
             categoriaRepository.save(categoria);
             return new GlobalResponseHandler().handleResponse("Categoria actualizada correctamente", categoria,HttpStatus.OK,request);
         }else{
-            return new GlobalResponseHandler().handleResponse("Categoria no encontrada",categoria,HttpStatus.NOT_FOUND,request);
+            return new GlobalResponseHandler().handleResponse("La Categoria indicada no existe",categoria,HttpStatus.NOT_FOUND,request);
         }
     }
 
