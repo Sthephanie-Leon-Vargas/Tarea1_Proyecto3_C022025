@@ -1,3 +1,4 @@
+/*
 package com.project.demo.logic.entity.producto;
 
 import com.project.demo.logic.entity.categoria.Categoria;
@@ -29,3 +30,4 @@ private Categoria categoria;
     }
 
 }
+*/
