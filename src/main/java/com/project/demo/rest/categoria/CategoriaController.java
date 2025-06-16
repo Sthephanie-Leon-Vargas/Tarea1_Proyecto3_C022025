@@ -20,18 +20,25 @@ public class CategoriaController {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-
     @PostMapping
     @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
     public ResponseEntity<?> createCategoria(@RequestBody Categoria categoria, HttpServletRequest request) {
-        Categoria savedCategoria = categoriaRepository.save(categoria);
-        return new GlobalResponseHandler().handleResponse("Categoria creada correctamente", savedCategoria,HttpStatus.CREATED,request);
+       if (categoria.getNombre() !=null && !categoria.getNombre().trim().isEmpty() && categoria.getDescripcion() !=null && !categoria.getDescripcion().trim().isEmpty()){
+           Categoria savedCategoria = categoriaRepository.save(categoria);
+           return new GlobalResponseHandler().handleResponse("Categoria creada correctamente", categoria,HttpStatus.CREATED,request);
+       }else{
+           return new GlobalResponseHandler().handleResponse("el nombre y descripcion son requeridos", categoria,HttpStatus.NOT_ACCEPTABLE,request);
+       }
+
     }
 
-
     @GetMapping
-    public List<?> getAllCategoria() {
-        return categoriaRepository.findAll();
+    public ResponseEntity<?> getAllCategoria(HttpServletRequest request) {
+        List<Categoria> categorias = categoriaRepository.findAll();
+        if (categorias.isEmpty()){
+            return new GlobalResponseHandler().handleResponse("No se encontraron resultados de categorias",null,HttpStatus.NOT_FOUND,request);
+        }
+        return new GlobalResponseHandler().handleResponse("Lista con todos las categorias registradas",categorias,HttpStatus.OK,request);
     }
 
 
@@ -40,6 +47,10 @@ public class CategoriaController {
     public ResponseEntity<?> updateCategoria(@PathVariable Long categoriaId, @RequestBody Categoria categoria,HttpServletRequest request) {
         Optional<Categoria> foundCategoria = categoriaRepository.findById(categoriaId);
         if (foundCategoria.isPresent()) {
+            //si estos campos no se pasan van a permanecer con el mismo valor que tenian
+            if (categoria.getNombre()==null || categoria.getNombre().trim().isEmpty()) categoria.setNombre(foundCategoria.get().getNombre());
+            if (categoria.getDescripcion()==null || categoria.getDescripcion().trim().isEmpty()) categoria.setDescripcion(foundCategoria.get().getDescripcion());
+
             categoria.setId(foundCategoria.get().getId());
             categoriaRepository.save(categoria);
             return new GlobalResponseHandler().handleResponse("Categoria actualizada correctamente", categoria,HttpStatus.OK,request);
