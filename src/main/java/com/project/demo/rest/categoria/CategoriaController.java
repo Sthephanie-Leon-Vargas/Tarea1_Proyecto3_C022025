@@ -32,6 +32,7 @@ public class CategoriaController {
 
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<?> getAllCategoria(HttpServletRequest request) {
         List<Categoria> categorias = categoriaRepository.findAll();
@@ -40,7 +41,6 @@ public class CategoriaController {
         }
         return new GlobalResponseHandler().handleResponse("Lista con todos las categorias registradas",categorias,HttpStatus.OK,request);
     }
-
 
     @PutMapping("/{categoriaId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN')")

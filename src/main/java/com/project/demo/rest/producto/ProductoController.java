@@ -30,10 +30,11 @@ public class ProductoController {
     public ResponseEntity<?> createCategoria(@RequestBody Producto prod, HttpServletRequest request) {
         Optional<Categoria> foundCategoria = categoriaRepository.findById(prod.getCategoria().getId());
         if (foundCategoria.isPresent()) {
+            prod.setCategoria(foundCategoria.get());
             //validacion para que los campo nombre, precio y stock sean obligatorios
             if (prod.getNombre()!=null && !prod.getNombre().trim().isEmpty() && prod.getPrecio()>0 &&  prod.getCantidadStock()>=0){
-                Producto savedProducto= productoRepository.save(prod);
-                return new GlobalResponseHandler().handleResponse("Producto creado correctamente", savedProducto,HttpStatus.CREATED,request);
+                productoRepository.save(prod);
+                return new GlobalResponseHandler().handleResponse("Producto creado correctamente",prod,HttpStatus.CREATED,request);
             }else{
                 return new GlobalResponseHandler().handleResponse("Revise que los campos: nombre este completado, el precio no puede ser menor a 0 y stock debe ser mayor o igual a 0",prod,HttpStatus.NOT_ACCEPTABLE,request);
             }
@@ -42,6 +43,7 @@ public class ProductoController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<?> getAllProducto(HttpServletRequest request) {
         List<Producto> producto = productoRepository.findAll();
